@@ -1,6 +1,8 @@
 package com.example.hospitalsystem.service;
+
 import com.example.hospitalsystem.model.Cita;
 import com.example.hospitalsystem.repository.CitaRepository;
+import com.example.hospitalsystem.security.Auditable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,10 +36,12 @@ public class CitaService {
         return citaRepository.findByFecha(fecha);
     }
 
+    @Auditable(accion = "CREATE", entidad = "Cita")
     public Cita createCita(Cita cita) {
         return citaRepository.save(cita);
     }
 
+    @Auditable(accion = "UPDATE", entidad = "Cita")
     public Cita updateCita(Long id, Cita cita) {
         if (citaRepository.existsById(id)) {
             cita.setIdCita(id);
@@ -46,6 +50,7 @@ public class CitaService {
         return null;
     }
 
+    @Auditable(accion = "UPDATE", entidad = "Cita")
     public Cita cambiarEstado(Long id, String nuevoEstado) {
         Optional<Cita> citaOpt = citaRepository.findById(id);
         if (citaOpt.isPresent()) {
@@ -56,6 +61,7 @@ public class CitaService {
         return null;
     }
 
+    @Auditable(accion = "DELETE", entidad = "Cita")
     public boolean deleteCita(Long id) {
         if (citaRepository.existsById(id)) {
             citaRepository.deleteById(id);

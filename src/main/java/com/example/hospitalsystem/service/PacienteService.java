@@ -6,6 +6,7 @@ import com.example.hospitalsystem.model.Paciente;
 import com.example.hospitalsystem.repository.AntecedenteMedicoRepository;
 import com.example.hospitalsystem.repository.HistoriaClinicaRepository;
 import com.example.hospitalsystem.repository.PacienteRepository;
+import com.example.hospitalsystem.security.Auditable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,20 +39,19 @@ public class PacienteService {
         return pacienteRepository.findByDni(dni);
     }
 
+    @Auditable(accion = "CREATE", entidad = "Paciente")
     @Transactional
     public Paciente createPaciente(Paciente paciente) {
         Paciente savedPaciente = pacienteRepository.save(paciente);
-
-        // Crear automáticamente la historia clínica
         HistoriaClinica historia = new HistoriaClinica();
         historia.setIdPaciente(savedPaciente.getIdPaciente());
         historia.setFechaApertura(LocalDate.now());
         historia.setObservaciones("Historia clínica creada automáticamente");
         historiaClinicaRepository.save(historia);
-
         return savedPaciente;
     }
 
+    @Auditable(accion = "UPDATE", entidad = "Paciente")
     public Paciente updatePaciente(Long id, Paciente paciente) {
         if (pacienteRepository.existsById(id)) {
             paciente.setIdPaciente(id);
@@ -60,6 +60,7 @@ public class PacienteService {
         return null;
     }
 
+    @Auditable(accion = "DELETE", entidad = "Paciente")
     public boolean deletePaciente(Long id) {
         if (pacienteRepository.existsById(id)) {
             pacienteRepository.deleteById(id);
@@ -76,6 +77,7 @@ public class PacienteService {
         return antecedenteMedicoRepository.findByIdHistoria(idHistoria);
     }
 
+    @Auditable(accion = "CREATE", entidad = "AntecedenteMedico")
     public AntecedenteMedico addAntecedenteMedico(AntecedenteMedico antecedente) {
         return antecedenteMedicoRepository.save(antecedente);
     }
